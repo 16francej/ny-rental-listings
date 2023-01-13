@@ -1,7 +1,7 @@
 <ul>
 <% @listing.each do |listing|%>
 <li>
-  <%= listing.name %>
+  <%= link_to listing.name, listing %>
 </li>
 <% end %>
 </ul>
