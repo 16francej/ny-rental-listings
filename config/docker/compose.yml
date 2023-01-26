@@ -1,0 +1,5 @@
+services:
+  web:
+    image: 16francej/ny-rentals:latest
+    ports:
+      - "3000:3000"

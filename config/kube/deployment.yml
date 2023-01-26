@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ny-rental-listings
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: rails-app
+  template:
+    metadata:
+      labels:
+        app: rails-app
+    spec:
+      containers:
+        - name: rails-app
+          image: 16francej/ny-rentals:latest
+          envFrom:
+            - configMapRef:
+                name: env
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 3000
+          env:
+            - name: DB_HOST_DEV
+              valueFrom:
+                secretKeyRef:
+                  name: db-host-dev
+                  key: DB_HOST_DEV
+            - name: DB_HOST_PROD
+              valueFrom:
+                secretKeyRef:
+                  name: db-host-prod
+                  key: DB_HOST_PROD
+            - name: DB_PASSWORD_DEV
+              valueFrom:
+                secretKeyRef:
+                  name: db-password-dev
+                  key: DB_PASSWORD_DEV
+            - name: DB_PASSWORD_PROD
+              valueFrom:
+                secretKeyRef:
+                  name: db-password-prod
+                  key: DB_PASSWORD_PROD
+            - name: SECRET_KEY_BASE
+              valueFrom:
+                secretKeyRef:
+                  name: secret-key-base
+                  key: SECRET_KEY_BASE
