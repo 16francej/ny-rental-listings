@@ -11,6 +11,7 @@ module Cityscope
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
     config.hosts << "adab423ef44ab4cb285fc3aa1ce8d892-240048787.us-east-1.elb.amazonaws.com"
+    config.hosts << "citysco.pe"
 
     # Configuration for the application, engines, and railties goes here.
     #
