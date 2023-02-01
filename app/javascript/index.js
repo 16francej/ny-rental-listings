@@ -7,7 +7,7 @@ const table2data = (tableBody) => {
             const rowData = [];  // make an array for that row
             row.querySelectorAll('td')  // for each cell in that row
                 .forEach(cell=>{
-                    rowData.push(cell.innerText);  // add it to the row data
+                    rowData.push(cell.innerHTML);  // add it to the row data
                 })
             tableData.push(rowData);  // add the full row to the table data
         });
@@ -21,31 +21,50 @@ const data2table = (tableBody, tableData) => {
             const rowData = tableData[i]; // get the array for the row data
             row.querySelectorAll('td')  // for each table cell ...
                 .forEach((cell, j)=>{
-                    cell.innerText = rowData[j]; // put the appropriate array element into the cell
+                    cell.innerHTML = rowData[j]; // put the appropriate array element into the cell
                 })
         });
+}
+
+const isNumeric = (n) => {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+const compareTableData = (a, b, sortAscending=true) => {
+    let comparatorA = a;
+    let comparatorB = b;
+    if (isNumeric(a)) {
+        comparatorA = parseFloat(a);
+        comparatorB = parseFloat(b);
+    }
+    if(comparatorA > comparatorB){
+        return sortAscending ? 1 : -1;
+    }
+    return sortAscending ? -1 : 1;
 }
 
 const sortTable = (table, sortColumn) => {
     // get the data from the table cells
     const tableBody = table.querySelector('tbody');
     const tableData = table2data(tableBody);
+
+    const sortAscending = globalColSortState.get(sortColumn);
     // sort the extracted data
     tableData.sort((a, b)=>{
-        if(a[sortColumn] > b[sortColumn]){
-            return 1;
-        }
-        return -1;
+        return compareTableData(a[sortColumn], b[sortColumn], sortAscending)
     })
     // put the sorted data back into the table
     data2table(tableBody, tableData);
 }
 const table = document.getElementById("listings-table");
-console.log(table);
 const tableHeaders = table.querySelectorAll("th");
-console.log(tableHeaders);
+let globalColSortState = new Map();
+for (let i = 0; i < tableHeaders.length; i += 1) {
+    globalColSortState.set(i, false);
+}
 tableHeaders.forEach((element, colNum) => {
     element.addEventListener('click', event => {
+        globalColSortState.set(colNum, !globalColSortState.get(colNum));
         sortTable(table, colNum);
     });
 });
