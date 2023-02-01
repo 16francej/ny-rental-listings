@@ -1,7 +1,20 @@
-<ul>
-<% @listing.each do |listing|%>
-<li>
-  <%= link_to listing.name, listing %>
-</li>
-<% end %>
-</ul>
+<table id='listings-table'>
+  <thead>
+    <th>Location</th>
+    <th>$/Mo</th>
+    <th>Bed</th>
+    <th>Bath</th>
+  </thead>
+  <tbody>
+  <% @listing.each do |listing| %>
+    <tr>
+      <td><%= link_to listing.name, listing %></td>
+      <td><%= listing.monthly_rental_price %></td>
+      <td><%= listing.num_bedrooms %></td>
+      <td><%= listing.num_bathrooms %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<%= javascript_include_tag 'index' %>
