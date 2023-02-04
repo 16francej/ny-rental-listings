@@ -1,3 +1,4 @@
+Rent <input id="minRent" type="number"> - <input id="maxRent" type="number">
 <table id='listings-table'>
   <thead>
     <th>Location</th>
@@ -5,7 +6,7 @@
     <th>Bed</th>
     <th>Bath</th>
   </thead>
-  <tbody>
+  <tbody id='listings-table-body'>
   <% @listing.each do |listing| %>
     <tr>
       <td><%= link_to listing.name, listing %></td>
