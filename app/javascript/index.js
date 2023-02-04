@@ -77,26 +77,36 @@ const initIndex = () => {
     filterColMap.set('minRent', 1);
     filterColMap.set('maxRent', 1);
 
-    const filterTable = (table, colNum, id) => {
+    const getFilterComparison = (cellValue, curValue, row, isMinFilter) => {
+        if (cellValue > curValue) {
+            $(row).removeClass('hidden-row');
+        } else {
+            $(row).addClass('hidden-row');
+        }
+    }
+
+    const filterTable = (table, colNum, id, isMinFilter=true) => {
         const curValueRaw = $(`#${id}`).val();
-        const curValue = isNumeric(curValueRaw) ? parseFloat(curValueRaw) : 0;;
+        const curValue = isNumeric(curValueRaw) ? parseFloat(curValueRaw) : 0;
         if (curValue === 0) {
             return;
         }
         $('#listings-table-body tr').each(function() {
             const rowChild = $(this).children()[colNum];
             var cellValue = parseInt($(rowChild).text());
-            if (cellValue > curValue) {
-                $(this).removeClass('hidden-row');
-            } else {
-                $(this).addClass('hidden-row');
-            }
+            getFilterComparison(cellValue, curValue, this, isMinFilter);
         })
     }
 
     filterMinIds.forEach((id) => {
-        const elementMin = $(`#${id}`)
+        const elementMin = $(`#${id}`);
         const colNum = filterColMap.get(id);
         elementMin.on('input', event => filterTable(table, colNum, id));
+    })
+
+    filterMaxIds.forEach((id) => {
+        const elementMax = $(`#${id}`);
+        const colNum = filterColMap.get(id);
+        elementMax.on('input', event => filterTable(table, colNum, id));
     })
 }
