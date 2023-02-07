@@ -78,7 +78,15 @@ const initIndex = () => {
     filterColMap.set('maxRent', 1);
 
     const getFilterComparison = (cellValue, curValue, row, isMinFilter) => {
-        if (cellValue > curValue) {
+        if (isMinFilter) {
+            if (cellValue > curValue) {
+                $(row).removeClass('hidden-row');
+            } else {
+                $(row).addClass('hidden-row');
+            }
+            return
+        }
+        if (cellValue < curValue) {
             $(row).removeClass('hidden-row');
         } else {
             $(row).addClass('hidden-row');
@@ -101,12 +109,12 @@ const initIndex = () => {
     filterMinIds.forEach((id) => {
         const elementMin = $(`#${id}`);
         const colNum = filterColMap.get(id);
-        elementMin.on('input', event => filterTable(table, colNum, id));
+        elementMin.on('input', event => filterTable(table, colNum, id, true));
     })
 
     filterMaxIds.forEach((id) => {
         const elementMax = $(`#${id}`);
         const colNum = filterColMap.get(id);
-        elementMax.on('input', event => filterTable(table, colNum, id));
+        elementMax.on('input', event => filterTable(table, colNum, id, false));
     })
 }
