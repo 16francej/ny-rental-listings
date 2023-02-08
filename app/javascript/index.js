@@ -7,25 +7,26 @@ class TableData {
 
 
 const initIndex = () => {
-    let rowVisibilityState = [];
+    let rowVisibilityStateMin = [];
+    let rowVisibilityStateMax = [];
 
-    const setRowVisibility = (shouldShow, row, rowIndex) => {
+    const setRowVisibility = (shouldShow, row, rowIndex, visibilityArray) => {
         const hideElementCssClass = 'hidden-row';
+        if (visibilityArray.length <= rowIndex){
+            visibilityArray.push(shouldShow);
+        } else {
+            visibilityArray[rowIndex] = shouldShow;
+        }
         if (shouldShow) {
             row.removeClass(hideElementCssClass);
         } else {
             row.addClass(hideElementCssClass);
         }
-        if (rowVisibilityState.length < rowIndex){
-            rowVisibilityState.push(shouldShow);
-        } else {
-            rowVisibilityState[rowIndex] = shouldShow;
-        }
     }
 
 // this function gets data from the rows and cells
 // within an html tbody element
-    const table2data = (tableBody) => {
+    const table2data = (tableBody, visibilityArray) => {
         const tableData = []; // create the array that'll hold the data rows
         let i = 0;
         tableBody.querySelectorAll('tr')
@@ -33,7 +34,7 @@ const initIndex = () => {
                 const rowData = [];  // make an array for that row
                 row.querySelectorAll('td')  // for each cell in that row
                     .forEach(cell => {
-                        const shouldShow = rowVisibilityState.length > i ? rowVisibilityState[i] : true;
+                        const shouldShow = visibilityArray.length > i ? visibilityArray[i] : true;
                         rowData.push(new TableData(cell.innerHTML, shouldShow));
                     })
                 tableData.push(rowData);  // add the full row to the table data
@@ -43,13 +44,13 @@ const initIndex = () => {
     }
 
 // this function puts data into an html tbody element
-    const data2table = (tableBody, tableData) => {
+    const data2table = (tableBody, tableData, visibilityArray) => {
         let i = -1; // Exclude th
             $('tr').each(function() {
                 if (i !== -1) {
                     let j = 0;
                     const rowData = tableData[i];
-                    setRowVisibility(rowData[0].visibility, $(this), i)
+                    setRowVisibility(rowData[0].visibility, $(this), i, visibilityArray);
                     $(this).find('td').each(function () {
                         $(this).html(rowData[j].value);
                         j += 1;
@@ -80,7 +81,7 @@ const initIndex = () => {
     const sortTable = (table, sortColumn) => {
         // get the data from the table cells
         const tableBody = table.querySelector('tbody');
-        const tableData = table2data(tableBody);
+        const tableData = table2data(tableBody, rowVisibilityStateMin);
 
         const sortAscending = globalColSortState.get(sortColumn);
         // sort the extracted data
@@ -88,7 +89,7 @@ const initIndex = () => {
             return compareTableData(a[sortColumn], b[sortColumn], sortAscending)
         })
         // put the sorted data back into the table
-        data2table(tableBody, tableData);
+        data2table(tableBody, tableData, rowVisibilityStateMin);
     }
     const table = document.getElementById("listings-table");
     const tableHeaders = table.querySelectorAll("th");
@@ -128,7 +129,8 @@ const initIndex = () => {
             const rowChild = $(this).children()[colNum];
             var cellValue = parseInt($(rowChild).text());
             const shouldShow = getFilterComparison(cellValue, curValue, this, isMinFilter);
-            setRowVisibility(shouldShow, $(this), rowIndex);
+            const visibilityArray = isMinFilter ? rowVisibilityStateMin : rowVisibilityStateMax;
+            setRowVisibility(shouldShow, $(this), rowIndex, visibilityArray);
             rowIndex += 1;
         });
     }
