@@ -1,6 +1,6 @@
 class ListingController < ApplicationController
   def index
-    @listing = Listing.all
+    @listing = Listing.limit(100)
   end
 
   def show

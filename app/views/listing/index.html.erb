@@ -1,21 +1,21 @@
-Rent <input id="minRent" type="number"> - <input id="maxRent" type="number">
-<table id='listings-table'>
-  <thead>
-    <th>Location</th>
-    <th>$/Mo</th>
-    <th>Bed</th>
-    <th>Bath</th>
-  </thead>
-  <tbody id='listings-table-body'>
-  <% @listing.each do |listing| %>
-    <tr>
-      <td><%= link_to listing.name, listing %></td>
-      <td><%= listing.monthly_rental_price %></td>
-      <td><%= listing.num_bedrooms %></td>
-      <td><%= listing.num_bathrooms %></td>
-    </tr>
-  <% end %>
-  </tbody>
-</table>
+<div id="example-table"></div>
 
-<%= javascript_include_tag 'index' %>
+<%#= javascript_include_tag 'custom/index' %>
+<script type="module">
+    import { TabulatorFull as Tabulator } from "tabulator-tables";
+
+    //define data array
+    var tabledata = [
+        <% @listing.each do |listing| %>
+        {id:"<%= listing.name %>", price:<%= listing.monthly_rental_price %>, num_bedrooms:<%= listing.num_bedrooms %>, num_bathrooms:<%= listing.num_bathrooms %>},
+        <% end %>
+    ];
+
+    //initialize table
+    var table = new Tabulator("#example-table", {
+        data:tabledata, //assign data to table
+        autoColumns:true, //create columns from data field names
+    });
+
+
+</script>

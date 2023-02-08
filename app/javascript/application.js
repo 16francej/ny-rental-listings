@@ -2,5 +2,4 @@
 import "@hotwired/turbo-rails"
 import "controllers"
 import "jquery"
-
-$(document).ready(initIndex)
+import "tabulator-tables";
