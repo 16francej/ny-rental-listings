@@ -1,42 +1,75 @@
+class TableData {
+    constructor(value, visibility) {
+        this.value = value;
+        this.visibility = visibility;
+    }
+}
+
+
 const initIndex = () => {
+    let rowVisibilityState = [];
+
+    const setRowVisibility = (shouldShow, row, rowIndex) => {
+        const hideElementCssClass = 'hidden-row';
+        if (shouldShow) {
+            row.removeClass(hideElementCssClass);
+        } else {
+            row.addClass(hideElementCssClass);
+        }
+        if (rowVisibilityState.length < rowIndex){
+            rowVisibilityState.push(shouldShow);
+        } else {
+            rowVisibilityState[rowIndex] = shouldShow;
+        }
+    }
+
 // this function gets data from the rows and cells
 // within an html tbody element
     const table2data = (tableBody) => {
         const tableData = []; // create the array that'll hold the data rows
+        let i = 0;
         tableBody.querySelectorAll('tr')
             .forEach(row => {  // for each table row...
                 const rowData = [];  // make an array for that row
                 row.querySelectorAll('td')  // for each cell in that row
                     .forEach(cell => {
-                        rowData.push(cell.innerHTML);  // add it to the row data
+                        const shouldShow = rowVisibilityState.length > i ? rowVisibilityState[i] : true;
+                        rowData.push(new TableData(cell.innerHTML, shouldShow));
                     })
                 tableData.push(rowData);  // add the full row to the table data
+                i += 1;
             });
         return tableData;
     }
 
 // this function puts data into an html tbody element
     const data2table = (tableBody, tableData) => {
-        tableBody.querySelectorAll('tr') // for each table row...
-            .forEach((row, i) => {
-                const rowData = tableData[i]; // get the array for the row data
-                row.querySelectorAll('td')  // for each table cell ...
-                    .forEach((cell, j) => {
-                        cell.innerHTML = rowData[j]; // put the appropriate array element into the cell
-                    })
+        let i = -1; // Exclude th
+            $('tr').each(function() {
+                if (i !== -1) {
+                    let j = 0;
+                    const rowData = tableData[i];
+                    setRowVisibility(rowData[0].visibility, $(this), i)
+                    $(this).find('td').each(function () {
+                        $(this).html(rowData[j].value);
+                        j += 1;
+                    });
+                }
+                i += 1;
             });
     }
 
     const isNumeric = (n) => {
-        return !isNaN(parseFloat(n)) && isFinite(n);
+        const parsedNum = parseFloat(n)
+        return !isNaN(parsedNum) && isFinite(n);
     }
 
     const compareTableData = (a, b, sortAscending = true) => {
-        let comparatorA = a;
-        let comparatorB = b;
-        if (isNumeric(a)) {
-            comparatorA = parseFloat(a);
-            comparatorB = parseFloat(b);
+        let comparatorA = a.value;
+        let comparatorB = b.value;
+        if (isNumeric(comparatorA)) {
+            comparatorA = parseFloat(comparatorA);
+            comparatorB = parseFloat(comparatorB);
         }
         if (comparatorA > comparatorB) {
             return sortAscending ? 1 : -1;
@@ -79,18 +112,9 @@ const initIndex = () => {
 
     const getFilterComparison = (cellValue, curValue, row, isMinFilter) => {
         if (isMinFilter) {
-            if (cellValue > curValue) {
-                $(row).removeClass('hidden-row');
-            } else {
-                $(row).addClass('hidden-row');
-            }
-            return
+            return cellValue > curValue;
         }
-        if (cellValue < curValue) {
-            $(row).removeClass('hidden-row');
-        } else {
-            $(row).addClass('hidden-row');
-        }
+        return cellValue < curValue;
     }
 
     const filterTable = (table, colNum, id, isMinFilter=true) => {
@@ -99,11 +123,14 @@ const initIndex = () => {
         if (curValue === 0) {
             return;
         }
+        let rowIndex = 0;
         $('#listings-table-body tr').each(function() {
             const rowChild = $(this).children()[colNum];
             var cellValue = parseInt($(rowChild).text());
-            getFilterComparison(cellValue, curValue, this, isMinFilter);
-        })
+            const shouldShow = getFilterComparison(cellValue, curValue, this, isMinFilter);
+            setRowVisibility(shouldShow, $(this), rowIndex);
+            rowIndex += 1;
+        });
     }
 
     filterMinIds.forEach((id) => {
