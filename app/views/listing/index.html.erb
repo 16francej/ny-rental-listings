@@ -7,14 +7,19 @@
     //define data array
     var tabledata = [
         <% @listing.each do |listing| %>
-        {id:"<%= listing.name %>", price:<%= listing.monthly_rental_price %>, num_bedrooms:<%= listing.num_bedrooms %>, num_bathrooms:<%= listing.num_bathrooms %>},
+        {id:`<%= link_to listing.name, listing %>`, price:<%= listing.monthly_rental_price %>, num_bedrooms:<%= listing.num_bedrooms %>, num_bathrooms:<%= listing.num_bathrooms %>},
         <% end %>
     ];
 
     //initialize table
     var table = new Tabulator("#example-table", {
         data:tabledata, //assign data to table
-        autoColumns:true, //create columns from data field names
+        columns: [
+            {title:"Name", field:"id", formatter:"html", sorter:"string", width:200},
+            {title:"$/Mo", field:"price", sorter:"number", hozAlign:"right"},
+            {title:"Beds", field:"num_bedrooms", sorter:"number", hozAlign:"right"},
+            {title:"Baths", field:"num_bathrooms", sorter:"number", hozAlign:"right"},
+        ]
     });
 
 
