@@ -7,7 +7,14 @@
     //define data array
     var tabledata = [
         <% @listing.each do |listing| %>
-        {id:`<%= link_to listing.name, listing %>`, price:<%= listing.monthly_rental_price %>, num_bedrooms:<%= listing.num_bedrooms %>, num_bathrooms:<%= listing.num_bathrooms %>},
+        {
+            id:`<%= link_to listing.name, listing %>`,
+            predicted_rent:<%= listing.predicted_rent %>.toFixed(0),
+            price:<%= listing.monthly_rental_price %>,
+            num_bedrooms:<%= listing.num_bedrooms %>,
+            num_bathrooms:<%= listing.num_bathrooms %>,
+            neighborhood:"<%= listing.neighborhood %>"
+        },
         <% end %>
     ];
 
@@ -16,9 +23,11 @@
         data:tabledata, //assign data to table
         columns: [
             {title:"Name", field:"id", formatter:"html", sorter:"string", width:200},
+            {title:"Pred. $/Mo", field:"predicted_rent", sorter:"number", hozAlign:"right"},
             {title:"$/Mo", field:"price", sorter:"number", hozAlign:"right"},
             {title:"Beds", field:"num_bedrooms", sorter:"number", hozAlign:"right"},
             {title:"Baths", field:"num_bathrooms", sorter:"number", hozAlign:"right"},
+            {title:"Neighborhood", field:"neighborhood", sorter:"string"}
         ]
     });
 
